@@ -39,11 +39,15 @@ namespace VersionNotes.Views
         private void Import_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.FileName = "ClearDashboard.json";
+            openFileDialog.DefaultExt = ".json";
             if (openFileDialog.ShowDialog() == true)
             {
                 var vm = (ViewModels.ShellViewModel)DataContext;
                 vm.ImportReleaseNotes(openFileDialog.FileName);
             }
         }
+
+
     }
 }

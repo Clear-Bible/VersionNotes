@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using VersionNotes.Models;
 using VersionNotes.Views;
@@ -28,6 +29,19 @@ namespace VersionNotes.ViewModels
 
         #region Observable Properties
 
+        private string _message = String.Empty;
+        public string Message
+        {
+            get => _message;
+            set
+            {
+                _message = value;
+                NotifyOfPropertyChange(() => Message);
+            }
+        }
+
+
+
         private ObservableCollection<ReleaseNote> _releaseNotes = new();
         public ObservableCollection<ReleaseNote> ReleaseNotes
         {
@@ -47,6 +61,11 @@ namespace VersionNotes.ViewModels
             {
                 _versionNum = value;
                 NotifyOfPropertyChange(() => VersionNum);
+
+                if (Message != "" && VersionNum != "")
+                {
+                    Message = "";
+                }
             }
         }
 
@@ -122,6 +141,7 @@ namespace VersionNotes.ViewModels
 
 
         #region Methods
+
 
         public void Process()
         {
@@ -214,6 +234,13 @@ namespace VersionNotes.ViewModels
 
         public void ExportReleaseNotes(string Path)
         {
+            if (VersionNum == "")
+            {
+                Message = "ERROR: Add in a Version Number";
+                return;
+            }
+
+
             UpdateFormat updateFormat = new();
             updateFormat.Version = VersionNum;
             updateFormat.ReleaseDate = ReleaseDate;
@@ -251,8 +278,6 @@ namespace VersionNotes.ViewModels
             VersionNum = "";
             ReleaseNotes.Clear();
         }
-        
-        #endregion // Methods
 
         public void ImportReleaseNotes(string fileName)
         {
@@ -275,5 +300,7 @@ namespace VersionNotes.ViewModels
             }
 
         }
+
+        #endregion // Methods
     }
 }

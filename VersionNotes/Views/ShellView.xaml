@@ -257,10 +257,13 @@
             <TextBox
                 x:Name="NameTextBox"
                 MinWidth="500"
+                MinHeight="50"
+                MaxWidth="900"
                 Margin="20,0,5,0"
                 VerticalAlignment="Center"
                 materialDesign:HintAssist.Hint="Note item text..."
-                Text="{Binding AddNoteText}" />
+                Text="{Binding AddNoteText}"
+                TextWrapping="Wrap" />
             <Button
                 x:Name="AddRecord"
                 Margin="10,0,0,0"
@@ -274,6 +277,12 @@
             Margin="0,5,10,10"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
+            <TextBlock
+                FontSize="16"
+                Margin="0 0 25 0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource RedLightBrush}"
+                Text="{Binding Message}" />
             <Button
                 x:Name="Clear"
                 Content="Clear"
@@ -298,14 +307,14 @@
             Grid.Row="0"
             Grid.RowSpan="3"
             Margin="5"
-            BorderBrush="{StaticResource SecondaryHueMidBrush}"
+            BorderBrush="{StaticResource PrimaryHueMidBrush}"
             BorderThickness="2"
             CornerRadius="5" />
         <Border
             Grid.Row="3"
             Grid.RowSpan="3"
             Margin="5"
-            BorderBrush="{StaticResource SecondaryHueMidBrush}"
+            BorderBrush="{StaticResource PrimaryHueMidBrush}"
             BorderThickness="2"
             CornerRadius="5" />
 
