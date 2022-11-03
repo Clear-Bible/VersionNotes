@@ -244,6 +244,7 @@ namespace VersionNotes.ViewModels
             UpdateFormat updateFormat = new();
             updateFormat.Version = VersionNum;
             updateFormat.ReleaseDate = ReleaseDate;
+            updateFormat.DownloadLink = DownLoadLink;
             updateFormat.ReleaseNotes = new List<ReleaseNote>(ReleaseNotes);
 
             var options = new JsonSerializerOptions { WriteIndented = true };
