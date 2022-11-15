@@ -195,6 +195,10 @@ namespace VersionNotes.ViewModels
                 {
                     updateFormat.Add(ProcessLine(line, ReleaseNoteType.Changed));
                 }
+                else if (line.StartsWith("Breaking"))
+                {
+                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.BreakingChange));
+                }
             }
 
             ReleaseNotes.Clear();

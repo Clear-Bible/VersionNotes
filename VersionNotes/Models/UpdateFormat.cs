@@ -18,7 +18,9 @@ namespace VersionNotes.Models
         [Description("Updated")]
         Updated,
         [Description("Deferred")]
-        Deferred
+        Deferred,
+        [Description("Breaking Change")]
+        BreakingChange
     }
 
     public class UpdateFormat
