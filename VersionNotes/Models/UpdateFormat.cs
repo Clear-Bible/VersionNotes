@@ -35,5 +35,6 @@ namespace VersionNotes.Models
     {
         public ReleaseNoteType NoteType { get; set; } = ReleaseNoteType.Added;
         public string Note { get; set; } = String.Empty;
+        public string Version { get; set; }
     }
 }
