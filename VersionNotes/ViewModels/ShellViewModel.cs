@@ -204,7 +204,7 @@ namespace VersionNotes.ViewModels
 
             ReleaseNotes.Clear();
             ReleaseNotes = updateFormat;
-
+            VersionNum = ReleaseNotes.FirstOrDefault().Version;
         }
 
         private ReleaseNote ProcessLine(string line, ReleaseNoteType noteType)
@@ -268,10 +268,11 @@ namespace VersionNotes.ViewModels
 
         public void AddRecord()
         {
-            ReleaseNotes.Add(new ReleaseNote
+            ReleaseNotes.Insert(0,new ReleaseNote
             {
                 NoteType = AddNoteReleaseType,
-                Note = AddNoteText
+                Note = AddNoteText,
+                Version = ReleaseNotes.FirstOrDefault().Version
             });
         }
 
