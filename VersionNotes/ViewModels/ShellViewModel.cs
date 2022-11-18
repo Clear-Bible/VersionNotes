@@ -246,15 +246,33 @@ namespace VersionNotes.ViewModels
                 return;
             }
 
+            var updateList = new List<UpdateFormat>();
+            var lastNoteVersion = VersionNum;
+            var currentNoteVersion = VersionNum;
+            var releaseNotes = new List<ReleaseNote>();
 
-            UpdateFormat updateFormat = new();
-            updateFormat.Version = VersionNum;
-            updateFormat.ReleaseDate = ReleaseDate;
-            updateFormat.DownloadLink = DownLoadLink;
-            updateFormat.ReleaseNotes = new List<ReleaseNote>(ReleaseNotes);
+            foreach (var note in ReleaseNotes)
+            {
+                lastNoteVersion = currentNoteVersion;
+                currentNoteVersion = note.Version;
+
+                if (currentNoteVersion != lastNoteVersion)
+                {
+                    var update = new UpdateFormat
+                    {
+                        Version = lastNoteVersion,
+                        ReleaseNotes = releaseNotes,
+                        DownloadLink = DownLoadLink,
+                        ReleaseDate = ReleaseDate //currently every update will appear to have the same release date
+                    };
+                    updateList.Add(update);
+                    releaseNotes = new List<ReleaseNote>();
+                }
+                releaseNotes.Add(note);
+            }
 
             var options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(updateFormat, options);
+            string jsonString = JsonSerializer.Serialize(updateList, options);
             File.WriteAllText(Path, jsonString);
         }
 
