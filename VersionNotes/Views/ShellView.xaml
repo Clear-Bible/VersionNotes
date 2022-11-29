@@ -47,6 +47,10 @@
             <iconPacks:PackIconModern Foreground="{StaticResource IndigoMidBrush}" Kind="TimerStop" />
         </DataTemplate>
 
+        <DataTemplate x:Key="breaking">
+            <iconPacks:PackIconOcticons Foreground="{StaticResource RedVeryDarkBrush}" Kind="Alert" />
+        </DataTemplate>
+
         <conversions:WidthSubtraction x:Key="WidthSubtraction" />
     </Window.Resources>
 
@@ -62,12 +66,28 @@
         </Grid.RowDefinitions>
 
         <!--  ROW 0  -->
-        <TextBlock
-            Margin="10,10,0,0"
-            VerticalAlignment="Center"
-            Foreground="{StaticResource SecondaryHueDarkBrush}">
-            Paste Google Doc Text into Box:
-        </TextBlock>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock
+                Margin="10,10,50,0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource SecondaryHueDarkBrush}">
+                Paste Google Doc Text into Box:
+            </TextBlock>
+
+            <Button
+                x:Name="ClickLink"
+                Margin="10"
+                VerticalAlignment="Center"
+                Style="{StaticResource TransparentButton}">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Cursor="Hand"
+                    FontSize="16"
+                    Foreground="DodgerBlue"
+                    Text="ClearDashboard Change Log"
+                    TextDecorations="Underline" />
+            </Button>
+        </StackPanel>
 
         <!--  ROW 1  -->
         <RichTextBox
@@ -199,6 +219,9 @@
                                                 <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Deferred}">
                                                     <Setter Property="ContentTemplate" Value="{StaticResource deferred}" />
                                                 </DataTrigger>
+                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.BreakingChange}">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource breaking}" />
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </ContentControl.Style>
@@ -207,7 +230,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Width="100">
+                    <GridViewColumn Width="130">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <ComboBox
@@ -220,7 +243,18 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Width="{Binding ElementName=ListView, Path=ActualWidth, Converter={conversions:WidthSubtraction}, ConverterParameter='140'}">
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox
+                                    VerticalAlignment="Center"
+                                    Text="{Binding VersionNumber}"
+                                    TextWrapping="Wrap" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="{Binding ElementName=ListView, Path=ActualWidth, Converter={conversions:WidthSubtraction}, ConverterParameter='330'}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox
@@ -278,9 +312,9 @@
             HorizontalAlignment="Right"
             Orientation="Horizontal">
             <TextBlock
-                FontSize="16"
-                Margin="0 0 25 0"
+                Margin="0,0,25,0"
                 VerticalAlignment="Center"
+                FontSize="16"
                 Foreground="{StaticResource RedLightBrush}"
                 Text="{Binding Message}" />
             <Button
@@ -299,7 +333,7 @@
             <Button
                 x:Name="Cancel"
                 Margin="10,0,10,0"
-                Content="Cancel"
+                Content="Close"
                 Style="{StaticResource MaterialDesignRaisedSecondaryButton}" />
         </StackPanel>
 
