@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,6 +20,8 @@ namespace VersionNotes.ViewModels
         #region Member Variables      
 
         private ShellView View;
+        private string _currentVersion;
+
 
         #endregion //Member Variables
 
@@ -41,6 +44,17 @@ namespace VersionNotes.ViewModels
             }
         }
 
+
+        private Uri _updateUrl = new Uri("https://docs.google.com/document/d/1voRKJLLMWfBXWmgahvxV6hHLrIM6MCtBYD_5l889_PM/edit#heading=h.tby3ca3ir1yc");
+        public Uri UpdateUrl
+        {
+            get => _updateUrl;
+            set
+            {
+                _updateUrl = value;
+                NotifyOfPropertyChange(() => UpdateUrl);
+            }
+        }
 
 
         private ObservableCollection<ReleaseNote> _releaseNotes = new();
@@ -146,6 +160,10 @@ namespace VersionNotes.ViewModels
 
         public void Process()
         {
+            bool startImport = false;
+            bool finishImport = false;
+            bool headerFound = false;
+
             var updateFormat = new ObservableCollection<ReleaseNote>();
 
             var rtb = View.RichTextBox;
@@ -155,50 +173,71 @@ namespace VersionNotes.ViewModels
 
             foreach (var line in rtbLines)
             {
-                if (line.Contains("Version:"))
+                if (line.StartsWith("========="))
                 {
-                    try
+                    if (startImport == false)
                     {
-                        // pull out the version number
-                        Regex regex = new Regex("\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b");
-                        var match = regex.Match(line);
-                        if (match.Success)
-                        {
-                            VersionNum = match.Value;
-                        }
-                        else
-                        {
-                            VersionNum = "";
-                        }
+                        startImport = true;
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Console.WriteLine(e);
+                        finishImport = true;
                     }
                 }
-                else if (line.StartsWith("Added"))
+
+                // make sure we are in the right section of the document
+                if (startImport && finishImport == false)
                 {
-                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.Added));
-                }
-                else if (line.StartsWith("Updated"))
-                {
-                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.Updated));
-                }
-                else if (line.StartsWith("Bug Fix"))
-                {
-                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.BugFix));
-                }
-                else if (line.StartsWith("Deferred"))
-                {
-                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.Deferred));
-                }
-                else if (line.StartsWith("Changed"))
-                {
-                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.Changed));
-                }
-                else if (line.StartsWith("Breaking Change"))
-                {
-                    updateFormat.Add(ProcessLine(line, ReleaseNoteType.BreakingChange));
+                    if (line.Contains("Version:"))
+                    {
+                        try
+                        {
+                            // pull out the version number
+                            Regex regex = new Regex("\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b");
+                            var match = regex.Match(line);
+                            if (match.Success)
+                            {
+                                if (headerFound == false)
+                                {
+                                    VersionNum = match.Value;
+                                    headerFound = true;
+                                }
+                                _currentVersion = match.Value;
+                            }
+                            else
+                            {
+                                VersionNum = "";
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                    }
+                    else if (line.StartsWith("Added"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.Added));
+                    }
+                    else if (line.StartsWith("Updated"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.Updated));
+                    }
+                    else if (line.StartsWith("Bug Fix"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.BugFix));
+                    }
+                    else if (line.StartsWith("Deferred"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.Deferred));
+                    }
+                    else if (line.StartsWith("Changed"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.Changed));
+                    }
+                    else if (line.StartsWith("Breaking Change"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.BreakingChange));
+                    }
                 }
             }
 
@@ -211,7 +250,7 @@ namespace VersionNotes.ViewModels
         {
             ReleaseNote note = new();
             note.NoteType = noteType;
-            note.Version = VersionNum;
+            note.VersionNumber = _currentVersion;
 
             try
             {
@@ -290,7 +329,7 @@ namespace VersionNotes.ViewModels
             {
                 NoteType = AddNoteReleaseType,
                 Note = AddNoteText,
-                Version = ReleaseNotes.FirstOrDefault().Version
+                VersionNumber = VersionNum
             });
         }
 
@@ -325,6 +364,28 @@ namespace VersionNotes.ViewModels
                 ReleaseNotes.Clear();
             }
 
+        }
+
+        public void ClickLink()
+        {
+            if (UpdateUrl.AbsoluteUri == "")
+            {
+                return;
+            }
+
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = UpdateUrl.AbsoluteUri,
+                    UseShellExecute = true
+                };
+                System.Diagnostics.Process.Start(psi);
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception);
+            }
         }
 
         #endregion // Methods
