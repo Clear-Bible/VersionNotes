@@ -243,7 +243,7 @@ namespace VersionNotes.ViewModels
 
             ReleaseNotes.Clear();
             ReleaseNotes = updateFormat;
-            VersionNum = ReleaseNotes.FirstOrDefault().Version;
+            VersionNum = ReleaseNotes.FirstOrDefault().VersionNumber;
         }
 
         private ReleaseNote ProcessLine(string line, ReleaseNoteType noteType)
@@ -293,7 +293,7 @@ namespace VersionNotes.ViewModels
             foreach (var note in ReleaseNotes)
             {
                 lastNoteVersion = currentNoteVersion;
-                currentNoteVersion = note.Version;
+                currentNoteVersion = note.VersionNumber;
 
                 if (currentNoteVersion != lastNoteVersion)
                 {
