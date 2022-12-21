@@ -84,6 +84,17 @@ namespace VersionNotes.ViewModels
             }
         }
 
+        private VersionType _versionType = VersionType.Release;
+        public VersionType VersionType
+        {
+            get => _versionType;
+            set
+            {
+                _versionType = value;
+                NotifyOfPropertyChange(() => VersionType);
+            }
+        }
+
         private string _releaseDate = DateTime.Now.Date.ToString();
         public string ReleaseDate
         {
@@ -214,6 +225,10 @@ namespace VersionNotes.ViewModels
                             Console.WriteLine(e);
                         }
                     }
+                    if (line.Contains("Prerelease Version:"))
+                    {
+                        VersionType = VersionType.Prerelease;
+                    }
                     else if (line.StartsWith("Added"))
                     {
                         updateFormat.Add(ProcessLine(line, ReleaseNoteType.Added));
@@ -300,6 +315,7 @@ namespace VersionNotes.ViewModels
                     var update = new UpdateFormat
                     {
                         Version = lastNoteVersion,
+                        VersionType = VersionType,
                         ReleaseNotes = releaseNotes,
                         DownloadLink = DownLoadLink,
                         ReleaseDate = ReleaseDate //currently every update will appear to have the same release date
