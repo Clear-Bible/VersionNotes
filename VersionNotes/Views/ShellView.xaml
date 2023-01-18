@@ -51,10 +51,19 @@
             <iconPacks:PackIconOcticons Foreground="{StaticResource RedVeryDarkBrush}" Kind="Alert" />
         </DataTemplate>
 
+        <DataTemplate x:Key="knownissues">
+            <iconPacks:PackIconMaterial Foreground="{StaticResource RedMidBrush}" Kind="AlertCircleOutline" />
+        </DataTemplate>
+
+
         <conversions:WidthSubtraction x:Key="WidthSubtraction" />
     </Window.Resources>
 
-    <Grid>
+    <Grid ShowGridLines="False">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="215*" />
+            <ColumnDefinition Width="986*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="200" />
@@ -63,10 +72,11 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
         <!--  ROW 0  -->
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
             <TextBlock
                 Margin="10,10,50,0"
                 VerticalAlignment="Center"
@@ -93,24 +103,27 @@
         <RichTextBox
             x:Name="RichTextBox"
             Grid.Row="1"
-            Margin="10"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            Grid.ColumnSpan="2"
+            Margin="10,10,10,10"
             Background="{StaticResource MaterialDesignDarkForeground}"
-            Foreground="{StaticResource MaterialDesignDarkBackground}" />
+            Foreground="{StaticResource MaterialDesignDarkBackground}"
+            VerticalScrollBarVisibility="Visible" />
 
         <!--  ROW 2  -->
         <Button
             x:Name="Process"
             Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
             Width="130"
-            Margin="20,0,10,10"
+            Margin="10"
             Content="Process RTB" />
 
         <!--  ROW 3  -->
         <StackPanel
             Grid.Row="3"
-            Margin="10"
+            Grid.ColumnSpan="2"
+            Margin="10,10,10,10"
             Orientation="Horizontal">
             <TextBlock
                 Margin="5,0,10,0"
@@ -147,133 +160,199 @@
 
 
         <!--  ROW 4  -->
-        <ListView
-            x:Name="ListView"
+        <TabControl
             Grid.Row="4"
-            Margin="10,0,10,0"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            Grid.ColumnSpan="2"
+            Margin="15"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
-            ItemsSource="{Binding ReleaseNotes, Mode=TwoWay}"
-            ScrollViewer.VerticalScrollBarVisibility="Visible">
+            materialDesign:ColorZoneAssist.Mode="PrimaryMid"
+            materialDesign:NavigationRailAssist.ShowSelectionBackground="True"
+            materialDesign:ShadowAssist.ShadowDepth="Depth0"
+            BorderBrush="Transparent"
+            BorderThickness="0"
+            SnapsToDevicePixels="True"
+            Style="{StaticResource MaterialDesignNavigatilRailTabControl}"
+            TabStripPlacement="Left">
 
-            <ListView.Style>
-                <Style TargetType="{x:Type ListView}">
-                    <Setter Property="Visibility" Value="Visible" />
-                </Style>
-            </ListView.Style>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <iconPacks:PackIconCodicons
+                            Width="24"
+                            Height="25"
+                            HorizontalAlignment="Center"
+                            Kind="Issues" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Text="Known Issues"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </TabItem.Header>
+                <ListBox
+                    x:Name="ListBoxKnownIssues"
+                    Margin="10,0,10,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    ItemsSource="{Binding KnownIssues, Mode=TwoWay}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible">
 
-            <ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <Setter Property="BorderBrush" Value="LightGray" />
-                    <Setter Property="BorderThickness" Value="0,0,0,1" />
-                </Style>
-            </ListView.ItemContainerStyle>
-
-            <ListView.View>
-                <GridView>
-                    <GridView.ColumnHeaderContainerStyle>
-                        <Style TargetType="{x:Type GridViewColumnHeader}">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="BorderBrush" Value="LightGray" />
+                            <Setter Property="BorderThickness" Value="0,0,0,1" />
                         </Style>
-                    </GridView.ColumnHeaderContainerStyle>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Width="auto" Height="auto">
+                        <iconPacks:PackIconFontAwesome
+                            Width="24"
+                            Height="25"
+                            HorizontalAlignment="Center"
+                            Kind="ToolsSolid" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Text="Change Log"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </TabItem.Header>
 
-                    <GridViewColumn Width="60">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button
-                                    VerticalAlignment="Center"
-                                    cm:Message.Attach="[Event Click] = [Action Delete($dataContext)]"
-                                    Style="{StaticResource RedDarkButton}"
-                                    ToolTip="Delete Row">
-                                    <iconPacks:PackIconFeatherIcons
-                                        Width="15"
-                                        Height="15"
-                                        Foreground="{StaticResource MaterialDesignDarkForeground}"
-                                        Kind="XCircle" />
-                                </Button>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                <ListView
+                    x:Name="ListView"
+                    Margin="10,0,10,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    ItemsSource="{Binding ReleaseNotes, Mode=TwoWay}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible">
 
-                    <GridViewColumn Width="30">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <ContentControl>
-                                    <ContentControl.Style>
-                                        <Style TargetType="ContentControl">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Added}">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource added}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.BugFix}">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource bugfix}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Changed}">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource changed}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Updated}">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource updated}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Deferred}">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource deferred}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.BreakingChange}">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource breaking}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ContentControl.Style>
-                                </ContentControl>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="BorderBrush" Value="LightGray" />
+                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
 
-                    <GridViewColumn Width="130">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <ComboBox
-                                    DisplayMemberPath="Description"
-                                    ItemsSource="{Binding Source={helpers:Enumeration {x:Type my:ReleaseNoteType}}}"
-                                    SelectedValue="{Binding NoteType}"
-                                    SelectedValuePath="Value" />
+                    <ListView.View>
+                        <GridView>
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
 
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                            <GridViewColumn Width="60">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button
+                                            VerticalAlignment="Center"
+                                            cm:Message.Attach="[Event Click] = [Action Delete($dataContext)]"
+                                            Style="{StaticResource RedDarkButton}"
+                                            ToolTip="Delete Row">
+                                            <iconPacks:PackIconFeatherIcons
+                                                Width="15"
+                                                Height="15"
+                                                Foreground="{StaticResource MaterialDesignDarkForeground}"
+                                                Kind="XCircle" />
+                                        </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                    <GridViewColumn Width="60">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox
-                                    VerticalAlignment="Center"
-                                    Text="{Binding VersionNumber}"
-                                    TextWrapping="Wrap" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                            <GridViewColumn Width="30">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl>
+                                            <ContentControl.Style>
+                                                <Style TargetType="ContentControl">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Added}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource added}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.BugFix}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource bugfix}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Changed}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource changed}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Updated}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource updated}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.Deferred}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource deferred}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.BreakingChange}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource breaking}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding NoteType}" Value="{x:Static my:ReleaseNoteType.KnownIssues}">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource knownissues}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ContentControl.Style>
+                                        </ContentControl>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                    <GridViewColumn Width="{Binding ElementName=ListView, Path=ActualWidth, Converter={conversions:WidthSubtraction}, ConverterParameter='330'}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox
-                                    VerticalAlignment="Center"
-                                    Text="{Binding Note}"
-                                    TextWrapping="Wrap" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                            <GridViewColumn Width="130">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox
+                                            DisplayMemberPath="Description"
+                                            ItemsSource="{Binding Source={helpers:Enumeration {x:Type my:ReleaseNoteType}}}"
+                                            SelectedValue="{Binding NoteType}"
+                                            SelectedValuePath="Value" />
+
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="60">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox
+                                            VerticalAlignment="Center"
+                                            Text="{Binding VersionNumber}"
+                                            TextWrapping="Wrap" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="{Binding ElementName=ListView, Path=ActualWidth, Converter={conversions:WidthSubtraction}, ConverterParameter='330'}">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Note}"
+                                            TextWrapping="Wrap" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
 
-                </GridView>
-            </ListView.View>
-        </ListView>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+        </TabControl>
 
         <!--  ROW 5  -->
         <StackPanel
-            Grid.Row="5"
-            Margin="0,0,10,10"
+            Grid.Row="6"
+            Grid.ColumnSpan="2"
+            Margin="0,0,0,10"
             HorizontalAlignment="Left"
             Orientation="Horizontal">
             <iconPacks:PackIconPicolIcons
@@ -307,16 +386,12 @@
 
         <!--  ROW 6  -->
         <StackPanel
-            Grid.Row="6"
+            Grid.Row="7"
+            Grid.Column="1"
             Margin="0,5,10,10"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
-            <TextBlock
-                Margin="0,0,25,0"
-                VerticalAlignment="Center"
-                FontSize="16"
-                Foreground="{StaticResource RedLightBrush}"
-                Text="{Binding Message}" />
+
             <Button
                 x:Name="Clear"
                 Content="Clear"
@@ -340,13 +415,15 @@
         <Border
             Grid.Row="0"
             Grid.RowSpan="3"
-            Margin="5"
+            Grid.ColumnSpan="2"
+            Margin="5,5,5,5"
             BorderBrush="{StaticResource PrimaryHueMidBrush}"
             BorderThickness="2"
             CornerRadius="5" />
         <Border
             Grid.Row="3"
-            Grid.RowSpan="3"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="2"
             Margin="5"
             BorderBrush="{StaticResource PrimaryHueMidBrush}"
             BorderThickness="2"

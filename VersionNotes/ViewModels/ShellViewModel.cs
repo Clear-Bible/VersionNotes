@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +22,7 @@ namespace VersionNotes.ViewModels
 
         private ShellView View;
         private string _currentVersion;
+        
 
 
         #endregion //Member Variables
@@ -141,6 +143,21 @@ namespace VersionNotes.ViewModels
 
         public string WindowTitle { get; set; } = "VersionNotes App";
 
+
+        private ObservableCollection<string> _knownIssues = new();
+        public ObservableCollection<string> KnownIssues
+        {
+            get => _knownIssues;
+            set
+            {
+                _knownIssues = value;
+                NotifyOfPropertyChange(() => KnownIssues);
+            }
+        }
+
+
+
+
         #endregion //Observable Properties
 
 
@@ -171,11 +188,16 @@ namespace VersionNotes.ViewModels
 
         public void Process()
         {
+            KnownIssues.Clear();
+
             bool startImport = false;
             bool finishImport = false;
             bool headerFound = false;
+            bool inKnownIssuesSection = false;
+            bool isFirstKnownIssue = false;
 
             var updateFormat = new ObservableCollection<ReleaseNote>();
+            
 
             var rtb = View.RichTextBox;
 
@@ -199,8 +221,15 @@ namespace VersionNotes.ViewModels
                 // make sure we are in the right section of the document
                 if (startImport && finishImport == false)
                 {
-                    if (line.Contains("Version:"))
+                    
+                    if (line.StartsWith("Known Issues:"))
                     {
+                        inKnownIssuesSection= true;
+                        isFirstKnownIssue= true;
+                    }
+                    else if (line.Contains("Version:"))
+                    {
+                        inKnownIssuesSection= false;
                         try
                         {
                             // pull out the version number
@@ -229,6 +258,15 @@ namespace VersionNotes.ViewModels
                     {
                         VersionType = VersionType.Prerelease;
                     }
+                    else if (inKnownIssuesSection)
+                    {
+                        if (isFirstKnownIssue == false)
+                        {
+                            KnownIssues.Add(line);
+                        }
+
+                        isFirstKnownIssue = false;
+                    }
                     else if (line.StartsWith("Added"))
                     {
                         updateFormat.Add(ProcessLine(line, ReleaseNoteType.Added));
@@ -253,12 +291,19 @@ namespace VersionNotes.ViewModels
                     {
                         updateFormat.Add(ProcessLine(line, ReleaseNoteType.BreakingChange));
                     }
+                    else if (line.StartsWith("Known Issue"))
+                    {
+                        updateFormat.Add(ProcessLine(line, ReleaseNoteType.BreakingChange));
+                    }
                 }
             }
 
             ReleaseNotes.Clear();
             ReleaseNotes = updateFormat;
-            VersionNum = ReleaseNotes.FirstOrDefault().VersionNumber;
+            if (ReleaseNotes.Count > 0)
+            {
+                VersionNum = ReleaseNotes.FirstOrDefault().VersionNumber;
+            }
         }
 
         private ReleaseNote ProcessLine(string line, ReleaseNoteType noteType)
@@ -304,22 +349,32 @@ namespace VersionNotes.ViewModels
             var lastNoteVersion = VersionNum;
             var currentNoteVersion = VersionNum;
             var releaseNotes = new List<ReleaseNote>();
+            bool firstRecord = true;
 
             foreach (var note in ReleaseNotes)
             {
                 lastNoteVersion = currentNoteVersion;
                 currentNoteVersion = note.VersionNumber;
-
+                
                 if (currentNoteVersion != lastNoteVersion)
                 {
+
                     var update = new UpdateFormat
                     {
                         Version = lastNoteVersion,
                         VersionType = VersionType,
                         ReleaseNotes = releaseNotes,
                         DownloadLink = DownLoadLink,
-                        ReleaseDate = ReleaseDate //currently every update will appear to have the same release date
+                        ReleaseDate = ReleaseDate, //currently every update will appear to have the same release date
                     };
+
+                    // only add known issues to the first record
+                    if (firstRecord)
+                    {
+                        update.KnownIssues = new List<string>(KnownIssues);
+                        firstRecord = false;
+                    }
+
                     updateList.Add(update);
                     releaseNotes = new List<ReleaseNote>();
                 }
