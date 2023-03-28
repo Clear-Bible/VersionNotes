@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace VersionNotes.Models
         public string ReleaseDate { get; set; } = String.Empty;
         public List<ReleaseNote> ReleaseNotes { get; set; } = new();
         public string DownloadLink { get; set; } = String.Empty;
+        public List<string> KnownIssues { get; set; } = new();
     }
 
 }

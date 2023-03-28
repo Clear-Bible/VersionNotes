@@ -15,5 +15,7 @@ public enum ReleaseNoteType
     [Description("Deferred")]
     Deferred,
     [Description("Breaking Change")]
-    BreakingChange
+    BreakingChange,
+    [Description("Known Issues")]
+    KnownIssues,
 }
