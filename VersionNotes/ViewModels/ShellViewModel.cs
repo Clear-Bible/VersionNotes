@@ -206,6 +206,7 @@ namespace VersionNotes.ViewModels
 
             foreach (var line in rtbLines)
             {
+                VersionType = VersionType.Release;
                 if (line.StartsWith("========="))
                 {
                     if (startImport == false)
