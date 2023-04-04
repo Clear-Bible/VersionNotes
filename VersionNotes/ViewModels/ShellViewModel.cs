@@ -130,7 +130,7 @@ namespace VersionNotes.ViewModels
             }
         }
 
-        private string _downLoadLink = "https://drive.google.com/drive/folders/1x4-4vjZS4AM6HNehp6XX66TZP68Q68f5";
+        private string _downLoadLink = "https://drive.google.com/drive/folders/1dCpaXhp3OWmNMDNRi-a8fWgqon17Mm22";
         public string DownLoadLink
         {
             get => _downLoadLink;
