@@ -130,7 +130,7 @@ namespace VersionNotes.ViewModels
             }
         }
 
-        private string _downLoadLink = "https://drive.google.com/drive/folders/1dCpaXhp3OWmNMDNRi-a8fWgqon17Mm22";
+        private string _downLoadLink = "https://cleardashboard.org/";
         public string DownLoadLink
         {
             get => _downLoadLink;
